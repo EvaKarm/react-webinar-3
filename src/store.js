@@ -5,7 +5,11 @@ class Store {
   constructor(initState = {}) {
     this.state = initState;
     this.listeners = []; // Слушатели изменений состояния
-    this.codeCounter = this.state.list.length
+
+    // this.codeCounter = this.state.list.length
+    const codes = this.state.list.map(item => item.code);
+    // Определяем самый большой `code` из существующих, чтобы исключить `code`, которые будут больше длины массива.
+    this.state.lastCode = Math.max(...codes);
   }
 
   /**
@@ -39,20 +43,15 @@ class Store {
     for (const listener of this.listeners) listener();
   }
 
-  /**
-   * Генератор случайного числа
-   */
-  setCode() {
-    return this.codeCounter += 1
-  }
-  /**
+   /**
    * Добавление новой записи
    */
   addItem() {
+    const setCode = this.state.lastCode + 1;
+
     this.setState({
       ...this.state,
-      list: [...this.state.list, {code: this.setCode(), title: 'Новая запись', selectedCount: 0}]
-    })
+      list: [...this.state.list, {code: setCode, title: 'Новая запись', selectedCount: 0}], lastCode: setCode })
   };
 
   /**
